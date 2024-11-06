@@ -16,7 +16,7 @@ const bookingSchema = new mongoose.Schema(
       type: String,
       enum: ["pending", "confirmed", "cancelled"],
       default: "pending",
-    },
+    }, 
     checkInDate: {
       type: Date,
       required: true,
