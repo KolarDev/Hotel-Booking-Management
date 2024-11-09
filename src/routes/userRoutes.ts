@@ -1,6 +1,6 @@
-const express = require("express");
-const userController = require("./../controllers/userController");
-const authController = require("./../controllers/authController");
+import express from "express";
+import userController from "./../controllers/userController";
+import authController from "./../controllers/authController";
 
 const router = express.Router();
 
@@ -21,4 +21,4 @@ router.get(
   userController.updateMe
 );
 
-module.exports = router;
+export default router;

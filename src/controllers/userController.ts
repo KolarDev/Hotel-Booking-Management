@@ -47,7 +47,7 @@ const updateMe = async (req, res, next) => {
   });
 };
 
-module.exports = {
+exports default {
   getAllUsers,
   getMe,
   updateMe,
