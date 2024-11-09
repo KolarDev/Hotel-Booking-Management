@@ -14,7 +14,7 @@ app.use(bodyparser.json());
 // // Serving Static Files
 // app.use(express.static(path.join(__dirname, "public")));
 
-app.get("/", (req, res) => {
+app.get("/", (req: Request, res) => {
   res.status(200).json({
     message: "Hey there! from the sever side",
     app: "Hotel-Reservation-System",
