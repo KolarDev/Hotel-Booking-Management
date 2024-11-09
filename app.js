@@ -15,12 +15,10 @@ app.use(bodyparser.json());
 // app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/", (req, res) => {
-  res
-    .status(200)
-    .json({
-      message: "Hey there! from the sever side",
-      app: "Hotel-Reservation-System",
-    });
+  res.status(200).json({
+    message: "Hey there! from the sever side",
+    app: "Hotel-Reservation-System",
+  });
 });
 
 app.use("/api/v1/users", usersRouter);
