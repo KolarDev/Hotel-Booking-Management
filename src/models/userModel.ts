@@ -1,9 +1,10 @@
 import crypto from "crypto";
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 import validator from "validator";
 import bcrypt from "bcryptjs";
+import { IUserDoc } from "../interfaces/userInterface";
 
-const userSchema = new mongoose.Schema(
+const userSchema = new Schema<IUserDoc>(
   {
     fullname: {
       type: String,
@@ -43,7 +44,7 @@ const userSchema = new mongoose.Schema(
 );
 
 // Hash password before save
-userSchema.pre("save", async function (next) {
+userSchema.pre<IUserDoc>("save", async function (next) {
   // Skip this midddleware if password is not modified
   if (!this.isModified("password")) return next();
   // Hash password
@@ -54,13 +55,13 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-userSchema.pre("save", function (next) {
+userSchema.pre<IUserDoc>("save", function (next) {
   if (!this.isModified("password") || this.isNew) return next();
   // Update password changedAt field anytime password is modified
   this.passwordChangedAt = Date.now() - 1000;
   next();
 });
 
-const User = mongoose.model("User", userSchema);
+const User = mongoose.model<IUserDoc>("User", userSchema);
 
-module.exports = User;
+export { User };

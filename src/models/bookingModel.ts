@@ -1,6 +1,6 @@
-const mongoose = require("mongoose");
-
-const bookingSchema = new mongoose.Schema(
+import mongoose, { Schema } from "mongoose";
+import { IBooking } from "../interfaces/bookingInterface";
+const bookingSchema = new Schema<IBooking>(
   {
     room: {
       type: mongoose.Schema.Types.ObjectId,
@@ -36,6 +36,6 @@ const bookingSchema = new mongoose.Schema(
   }
 );
 
-const Booking = mongoose.model("Booking", bookingSchema);
+const Booking = mongoose.model<IBooking>("Booking", bookingSchema);
 
-module.exports = Booking;
+export { Booking }

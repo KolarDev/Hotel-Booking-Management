@@ -1,11 +1,12 @@
-const { promisify } = require("util");
-const User = require("./../models/userModel");
-const AppError = require("./../utils/appError");
-const jwt = require("jsonwebtoken");
-const Email = require("../utils/notificator");
+import { promisify } from "util";
+import { NextFunction, Request, Response } from "express-serve-static-core";
+import User from "./../models/userModel";
+import AppError from "./../utils/appError";
+import jwt from "jsonwebtoken";
+import Email from "../utils/notificator";
 
 // Registering user account
-const signup = async (req, res) => {
+const signup = async (req: Request, res: Response, next: NextFunction) => {
   const { fullname, email, phoneNumber, password, passwordConfirm } = req.body;
 
   const newUser = await User.create({
@@ -15,13 +16,12 @@ const signup = async (req, res) => {
     password,
     passwordConfirm,
   });
-    
-  sendToken(newUser, 201, res);
 
+  sendToken(newUser, 201, res);
 };
 
 // Logging user in
-const login = async (req, res, next) => {
+const login = async (req: Request, res: Response, next: NextFunction) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -38,7 +38,7 @@ const login = async (req, res, next) => {
 };
 
 // Logout
-const logout = (req, res) => {
+const logout = (req: Request, res: Response, next: NextFunction) => {
   // Token invalidation logic goes here (e.g., using a blacklist)
   res.cookie("jwt", "loggedout", {
     expiresIn: new Date(Date.now() + 10 * 1000),
@@ -52,7 +52,11 @@ const logout = (req, res) => {
 };
 
 // Protect route to be accessed by only loggedIn users
-const protectRoute = async (req, res, next) => {
+const protectRoute = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   // 1. Get the token from the authorization header
   let token;
   if (
@@ -82,7 +86,11 @@ const protectRoute = async (req, res, next) => {
 };
 
 // Password Update Functionality. Logged in users changing password
-const updatePassword = async (req, res, next) => {
+const updatePassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   // 1. Get the logged in user from collection
   const user = await User.findById(req.user.id).select("+password");
 
@@ -127,11 +135,4 @@ const sendToken = (user, statusCode, res) => {
   });
 };
 
-module.exports = {
-  signup,
-  login,
-  logout,
-  protectRoute,
-  updatePassword,
-  sendToken,
-};
+export { signup, login, logout, protectRoute, updatePassword, sendToken };
