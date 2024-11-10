@@ -114,7 +114,7 @@ const generateToken = (id) => {
   });
 };
 
-const sendToken = (user, statusCode, res) => {
+const sendToken = (user: any, statusCode: number, res: Response) => {
   const token = generateToken(user._id);
   console.log(token);
   const cookieOptions = {

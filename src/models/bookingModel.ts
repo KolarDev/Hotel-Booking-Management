@@ -1,5 +1,16 @@
 import mongoose, { Schema } from "mongoose";
-import { IBooking } from "../interfaces/bookingInterface";
+
+export interface IBooking extends Document {
+  room: string;
+  user: Types.ObjectId;
+  status: string;
+  checkInDate: Date;
+  checkOutDate: Date;
+  createdAt: Date;
+}
+
+
+
 const bookingSchema = new Schema<IBooking>(
   {
     room: {

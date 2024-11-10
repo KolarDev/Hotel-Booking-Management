@@ -1,10 +1,23 @@
 import crypto from "crypto";
-import mongoose, { Schema } from "mongoose";
+import { Schema, Document, Types, model } from "mongoose";
 import validator from "validator";
 import bcrypt from "bcryptjs";
-import { IUserDoc } from "../interfaces/userInterface";
 
-const userSchema = new Schema<IUserDoc>(
+export interface IUser extends Document {
+  fullname: string;
+  email: string;
+  password?: string;
+  passwordConfirm?: string;
+  passwordChangedAt: Date;
+}
+
+export interface IUserJSON extends Document {
+  fullname: string;
+  email: string;
+  passwordChangedAt: Date;
+}
+
+const userSchema = new Schema<IUser>(
   {
     fullname: {
       type: String,
@@ -18,7 +31,6 @@ const userSchema = new Schema<IUserDoc>(
       lowercase: true,
       validate: [validator.isEmail, "Please provide a valid Email"],
     },
-    phoneNumber: Number,
     password: {
       type: String,
       required: [true, "Please provide your password"],
@@ -44,7 +56,7 @@ const userSchema = new Schema<IUserDoc>(
 );
 
 // Hash password before save
-userSchema.pre<IUserDoc>("save", async function (next) {
+userSchema.pre<IUser>("save", async function (next) {
   // Skip this midddleware if password is not modified
   if (!this.isModified("password")) return next();
   // Hash password
@@ -55,13 +67,13 @@ userSchema.pre<IUserDoc>("save", async function (next) {
   next();
 });
 
-userSchema.pre<IUserDoc>("save", function (next) {
+userSchema.pre<IUser>("save", function (next) {
   if (!this.isModified("password") || this.isNew) return next();
   // Update password changedAt field anytime password is modified
   this.passwordChangedAt = Date.now() - 1000;
   next();
 });
 
-const User = mongoose.model<IUserDoc>("User", userSchema);
+const User = model<IUser>("User", userSchema);
 
 export { User };

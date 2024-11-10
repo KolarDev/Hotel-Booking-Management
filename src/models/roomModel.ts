@@ -1,7 +1,14 @@
-import mongoose from "mongoose";
-import { IRoom } from "../interfaces/roomInterface";
+import { Schema, Document, Types, model } from "mongoose";
 
-const roomSchema = new mongoose.Schema<IRoom>(
+export interface IRoom extends Document {
+  roomNumber: string;
+  type: string;
+  price: number;
+  bookings?: string;
+  createdAt: Date;
+}
+
+const roomSchema = new Schema<IRoom>(
   {
     roomNumber: {
       type: String,
@@ -35,6 +42,6 @@ const roomSchema = new mongoose.Schema<IRoom>(
   }
 );
 
-const Room = mongoose.model<IRoom>("Room", roomSchema);
+const Room = model<IRoom>("Room", roomSchema);
 
 module.exports = Room;

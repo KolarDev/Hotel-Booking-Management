@@ -1,8 +1,8 @@
-import { Document } from "mongoose";
+import { Document, Types } from "mongoose";
 
 export interface IBooking extends Document {
   room: string;
-  user: string;
+  user: Types.ObjectId;
   status: string;
   checkInDate: Date;
   checkOutDate: Date;
