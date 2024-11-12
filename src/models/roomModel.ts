@@ -4,7 +4,7 @@ export interface IRoom extends Document {
   roomNumber: string;
   type: string;
   price: number;
-  bookings?: string;
+  bookings?: Types.ObjectId;
   createdAt: Date;
 }
 
