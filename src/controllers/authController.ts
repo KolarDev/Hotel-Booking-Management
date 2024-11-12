@@ -1,9 +1,10 @@
 import { promisify } from "util";
-import { NextFunction, Request, Response } from "express-serve-static-core";
-import User from "./../models/userModel";
-import AppError from "./../utils/appError";
+import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import Email from "../utils/notificator";
+import { Types } from "mongoose";
+import { NextFunction, Request, Response } from "express-serve-static-core";
+import { User, IUser } from "./../models/userModel";
+import AppError from "./../utils/appError";
 
 // Registering user account
 const signup = async (req: Request, res: Response, next: NextFunction) => {
@@ -28,9 +29,11 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
     return next(new AppError("Provide your username and password!!", 401));
   }
 
-  const user = await User.findOne({ email }).select("+password");
+  const user: IUser = await User.findOne({ email }).select("+password");
 
-  if (!user || !(await user.checkPassword(password, user.password))) {
+  const checkPassword = await bcrypt.compare(password, user.password);
+
+  if (!user || !checkPassword) {
     return next(new AppError("Invalid Credentials!!", 401));
   }
 
@@ -92,10 +95,14 @@ const updatePassword = async (
   next: NextFunction
 ) => {
   // 1. Get the logged in user from collection
-  const user = await User.findById(req.user.id).select("+password");
+  const user: IUser = await User.findById(req.user.id).select("+password");
 
   // 2. Check if the user's current password is correct
-  if (!(await user.checkPassword(req.body.passwordCurrent, user.password))) {
+  const checkPassword = await bcrypt.compare(
+    req.body.passwordCurrent,
+    user.password
+  );
+  if (!checkPassword) {
     return next(new AppError("Incorrect Current Password!", 401));
   }
 
@@ -108,7 +115,7 @@ const updatePassword = async (
   sendToken(user, 200, res);
 };
 
-const generateToken = (id) => {
+const generateToken = (id: Types.ObjectId) => {
   return jwt.sign({ id: id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
