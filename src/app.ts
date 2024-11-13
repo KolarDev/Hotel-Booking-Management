@@ -5,7 +5,7 @@ import bodyparser from "body-parser";
 
 // const scheduler = require("./utils/scheduler"); ///////////
 
-import usersRouter from "./src/routes/userRoutes";
+import usersRouter from "./routes/userRoutes";
 
 const app = express();
 
