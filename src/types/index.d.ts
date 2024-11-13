@@ -1,5 +1,5 @@
 import * as express from "express-serve-static-core";
-import { IUser } from "./src/models/userModel";
+import { IUser } from "../models/userModel";
 
 declare global {
   namespace Express {
