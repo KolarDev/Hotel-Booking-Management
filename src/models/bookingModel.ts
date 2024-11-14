@@ -1,15 +1,13 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Types } from "mongoose";
 
 export interface IBooking extends Document {
-  room: string;
+  room: Types.ObjectId;
   user: Types.ObjectId;
   status: string;
   checkInDate: Date;
   checkOutDate: Date;
   createdAt: Date;
 }
-
-
 
 const bookingSchema = new Schema<IBooking>(
   {
@@ -27,7 +25,7 @@ const bookingSchema = new Schema<IBooking>(
       type: String,
       enum: ["pending", "confirmed", "cancelled"],
       default: "pending",
-    }, 
+    },
     checkInDate: {
       type: Date,
       required: true,
@@ -49,4 +47,4 @@ const bookingSchema = new Schema<IBooking>(
 
 const Booking = mongoose.model<IBooking>("Booking", bookingSchema);
 
-export { Booking }
+export { Booking };

@@ -2,7 +2,7 @@ import { promisify } from "util";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { Types } from "mongoose";
-import { NextFunction, Request, Response } from "express-serve-static-core";
+import { NextFunction, Request, Response } from "express";
 import { User, IUser } from "./../models/userModel";
 import AppError from "./../utils/appError";
 

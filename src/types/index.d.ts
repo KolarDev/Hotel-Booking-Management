@@ -1,4 +1,4 @@
-import * as express from "express-serve-static-core";
+import * as express from "express";
 import { IUser } from "../models/userModel";
 
 declare global {
@@ -12,7 +12,7 @@ declare global {
 declare global {
   namespace NodeJS {
     interface ProcessEnv {
-      ; // To be used for req.user for authentication
+      env: string; // To be used for req.user for authentication
     }
   }
 }

@@ -12,7 +12,7 @@ const roomSchema = new Schema<IRoom>(
   {
     roomNumber: {
       type: String,
-      unique: [true, "Room Number already exists!"],
+      unique: true,
       required: true,
     },
     type: {

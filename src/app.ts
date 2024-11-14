@@ -1,6 +1,6 @@
 import path from "path";
 import express from "express";
-import { Request, Response } from "express-serve-static-core";
+import { Request, Response } from "express";
 import bodyparser from "body-parser";
 
 // const scheduler = require("./utils/scheduler"); ///////////

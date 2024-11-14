@@ -1,5 +1,5 @@
 import { User } from "./../models/userModel";
-import { NextFunction, Request, Response } from "express-serve-static-core";
+import { NextFunction, Request, Response } from "express";
 import AppError from "./../utils/appError";
 
 // Get all Users

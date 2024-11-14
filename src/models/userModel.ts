@@ -27,7 +27,7 @@ const userSchema = new Schema<IUser>(
     email: {
       type: String,
       required: [true, "Please provide your email"],
-      unique: [true, "Email already exists!"],
+      unique: true,
       lowercase: true,
       validate: [validator.isEmail, "Please provide a valid Email"],
     },
@@ -70,7 +70,7 @@ userSchema.pre<IUser>("save", async function (next) {
 userSchema.pre<IUser>("save", function (next) {
   if (!this.isModified("password") || this.isNew) return next();
   // Update password changedAt field anytime password is modified
-  this.passwordChangedAt = Date.now() - 1000;
+  this.passwordChangedAt = new Date(Date.now() - 1000);
   next();
 });
 
