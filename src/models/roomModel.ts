@@ -3,7 +3,7 @@ import { Schema, Document, Types, model } from "mongoose";
 export interface IRoom extends Document {
   roomNumber: string;
   type: string;
-  price: number;
+  price_per_night: number;
   bookings?: Types.ObjectId;
   createdAt: Date;
 }
@@ -20,7 +20,7 @@ const roomSchema = new Schema<IRoom>(
       enum: ["regular", "vip", "vvip"],
       required: true,
     },
-    price: {
+    price_per_night: {
       type: Number,
       required: true,
     },
