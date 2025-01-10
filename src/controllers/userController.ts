@@ -17,35 +17,52 @@ const getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
 
 // Get User Profile details
 const getMe = async (req: Request, res: Response, next: NextFunction) => {
-  const userId = (req.user._id = req.params.id);
-  const user = await User.findById(userId);
-  if (!user) next(new AppError("User not found!", 404));
+  try {
+    const userId = (req.user._id = req.params.id);
+    const user = await User.findById(userId);
 
-  res.status(200).json({
-    status: "success",
-    data: {
-      user,
-    },
-  });
+    if (!user) next(new AppError("User not found!", 404));
+
+    res.status(200).json({
+      status: "success",
+      data: {
+        user,
+      },
+    });
+  } catch (error) {
+    res.status(200).json({
+      status: "Failed!",
+      message: "Error fetching user !",
+    });
+    console.log(error);
+  }
 };
 
 // Update User Profile details
 const updateMe = async (req: Request, res: Response, next: NextFunction) => {
-  const { fullname, email, phoneNumber } = req.body;
-  const userId = (req.user._id = req.params.id);
-  const user = await User.findByIdAndUpdate(userId, {
-    fullname,
-    email,
-    phoneNumber,
-  });
-  if (!user) next(new AppError("User not found!", 404));
+  try {
+    const { fullname, email, phoneNumber } = req.body;
+    const userId = (req.user._id = req.params.id);
+    const user = await User.findByIdAndUpdate(userId, {
+      fullname,
+      email,
+      phoneNumber,
+    });
+    if (!user) next(new AppError("User not found!", 404));
 
-  res.status(200).json({
-    status: "success",
-    data: {
-      user,
-    },
-  });
+    res.status(200).json({
+      status: "success",
+      data: {
+        user,
+      },
+    });
+  } catch (error) {
+    res.status(200).json({
+      status: "Failed!",
+      message: "Error updating user !",
+    });
+    console.log(error);
+  }
 };
 
 export { getAllUsers, getMe, updateMe };
