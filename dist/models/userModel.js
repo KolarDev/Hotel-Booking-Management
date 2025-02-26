@@ -25,7 +25,7 @@ const userSchema = new mongoose_1.Schema({
     email: {
         type: String,
         required: [true, "Please provide your email"],
-        unique: [true, "Email already exists!"],
+        unique: true,
         lowercase: true,
         validate: [validator_1.default.isEmail, "Please provide a valid Email"],
     },
@@ -43,6 +43,12 @@ const userSchema = new mongoose_1.Schema({
                 return el === this.password;
             },
             message: "Passwords are not the same!!",
+        },
+        role: {
+            type: String,
+            enum: ["user", "admin"],
+            required: true,
+            default: "user",
         },
     },
     passwordChangedAt: Date,
@@ -68,7 +74,7 @@ userSchema.pre("save", function (next) {
     if (!this.isModified("password") || this.isNew)
         return next();
     // Update password changedAt field anytime password is modified
-    this.passwordChangedAt = Date.now() - 1000;
+    this.passwordChangedAt = new Date(Date.now() - 1000);
     next();
 });
 const User = (0, mongoose_1.model)("User", userSchema);

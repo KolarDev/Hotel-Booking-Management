@@ -30,34 +30,52 @@ const getAllUsers = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
 exports.getAllUsers = getAllUsers;
 // Get User Profile details
 const getMe = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const userId = (req.user._id = req.params.id);
-    const user = yield userModel_1.User.findById(userId);
-    if (!user)
-        next(new appError_1.default("User not found!", 404));
-    res.status(200).json({
-        status: "success",
-        data: {
-            user,
-        },
-    });
+    try {
+        const userId = (req.user._id = req.params.id);
+        const user = yield userModel_1.User.findById(userId);
+        if (!user)
+            next(new appError_1.default("User not found!", 404));
+        res.status(200).json({
+            status: "success",
+            data: {
+                user,
+            },
+        });
+    }
+    catch (error) {
+        res.status(200).json({
+            status: "Failed!",
+            message: "Error fetching user !",
+        });
+        console.log(error);
+    }
 });
 exports.getMe = getMe;
 // Update User Profile details
 const updateMe = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { fullname, email, phoneNumber } = req.body;
-    const userId = (req.user._id = req.params.id);
-    const user = yield userModel_1.User.findByIdAndUpdate(userId, {
-        fullname,
-        email,
-        phoneNumber,
-    });
-    if (!user)
-        next(new appError_1.default("User not found!", 404));
-    res.status(200).json({
-        status: "success",
-        data: {
-            user,
-        },
-    });
+    try {
+        const { fullname, email, phoneNumber } = req.body;
+        const userId = (req.user._id = req.params.id);
+        const user = yield userModel_1.User.findByIdAndUpdate(userId, {
+            fullname,
+            email,
+            phoneNumber,
+        });
+        if (!user)
+            next(new appError_1.default("User not found!", 404));
+        res.status(200).json({
+            status: "success",
+            data: {
+                user,
+            },
+        });
+    }
+    catch (error) {
+        res.status(200).json({
+            status: "Failed!",
+            message: "Error updating user !",
+        });
+        console.log(error);
+    }
 });
 exports.updateMe = updateMe;

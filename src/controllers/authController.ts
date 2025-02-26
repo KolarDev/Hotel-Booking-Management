@@ -1,8 +1,9 @@
 import { promisify } from "util";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload, Secret } from "jsonwebtoken";
 import { Types } from "mongoose";
 import { NextFunction, Request, Response } from "express";
+import { config } from "../config/index";
 import { User, IUser } from "./../models/userModel";
 import AppError from "./../utils/appError";
 
@@ -44,7 +45,7 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 const logout = (req: Request, res: Response, next: NextFunction) => {
   // Token invalidation logic goes here (e.g., using a blacklist)
   res.cookie("jwt", "loggedout", {
-    expiresIn: new Date(Date.now() + 10 * 1000),
+    expires: new Date(Date.now() + 10 * 1000),
     httpOnly: true,
   });
 
@@ -61,6 +62,7 @@ const protectRoute = async (
   next: NextFunction
 ) => {
   // 1. Get the token from the authorization header
+  // const token = req.cookies?.jwt || req.headers.authorization?.split(" ")[1];
   let token;
   if (
     req.headers.authorization &&
@@ -72,10 +74,13 @@ const protectRoute = async (
   if (!token) return next(new AppError("Please login to get access!", 401));
 
   // 2. Verifying the token. Server verifies by test signature
-  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+  const decoded = (await jwt.verify(token, config.JWT_SECRET)) as JwtPayload;
 
   // 3. Check if user still exists
-  const confirmUser = await User.findById(decoded.id);
+  const confirmUser = await User.findById((decoded as any).id).select(
+    "_id fullname email role"
+  );
+
   if (!confirmUser) {
     return next(
       new AppError("Authentication Failed!, Try logging in again", 401)
@@ -87,6 +92,27 @@ const protectRoute = async (
   // Road clear!! Move on...
   next();
 };
+
+// const protectRoute = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+//   try {
+//     const token = req.cookies.jwt || req.headers.authorization?.split(" ")[1]; // Handle both cookie & header tokens
+//     if (!token) return next(new AppError("Unauthorized! No token provided.", 401));
+
+//     const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
+
+//     // Only fetch necessary fields to improve performance
+//     const user = await User.findById((decoded as any).id).select("_id name email role");
+
+//     if (!user) return next(new AppError("User no longer exists!", 401));
+
+//     req.user = user; // Attach only necessary data
+//     next();
+//   } catch (error) {
+//     next(new AppError("Authentication failed!", 401));
+//   }
+// };
+
+// export { protectRoute };
 
 // Password Update Functionality. Logged in users changing password
 const updatePassword = async (
@@ -115,9 +141,9 @@ const updatePassword = async (
   sendToken(user, 200, res);
 };
 
-const generateToken = (id: Types.ObjectId) => {
-  return jwt.sign({ id: id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN,
+const generateToken = (payload: object) => {
+  return jwt.sign(payload, config.JWT_SECRET as Secret, {
+    expiresIn: Number(config.JWT_EXPIRES_IN),
   });
 };
 
@@ -126,7 +152,7 @@ const sendToken = (user: any, statusCode: number, res: Response) => {
   console.log(token);
   const cookieOptions = {
     expires: new Date(
-      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+      Date.now() + config.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
     ),
     httpOnly: true,
   };

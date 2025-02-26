@@ -13,9 +13,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sendToken = exports.updatePassword = exports.protectRoute = exports.logout = exports.login = exports.signup = void 0;
-const util_1 = require("util");
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const index_1 = require("../config/index");
 const userModel_1 = require("./../models/userModel");
 const appError_1 = __importDefault(require("./../utils/appError"));
 // Registering user account
@@ -49,7 +49,7 @@ exports.login = login;
 const logout = (req, res, next) => {
     // Token invalidation logic goes here (e.g., using a blacklist)
     res.cookie("jwt", "loggedout", {
-        expiresIn: new Date(Date.now() + 10 * 1000),
+        expires: new Date(Date.now() + 10 * 1000),
         httpOnly: true,
     });
     res.status(200).json({
@@ -61,6 +61,7 @@ exports.logout = logout;
 // Protect route to be accessed by only loggedIn users
 const protectRoute = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     // 1. Get the token from the authorization header
+    // const token = req.cookies?.jwt || req.headers.authorization?.split(" ")[1];
     let token;
     if (req.headers.authorization &&
         req.headers.authorization.startsWith("Bearer ")) {
@@ -70,9 +71,9 @@ const protectRoute = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
     if (!token)
         return next(new appError_1.default("Please login to get access!", 401));
     // 2. Verifying the token. Server verifies by test signature
-    const decoded = yield (0, util_1.promisify)(jsonwebtoken_1.default.verify)(token, process.env.JWT_SECRET);
+    const decoded = (yield jsonwebtoken_1.default.verify(token, index_1.config.JWT_SECRET));
     // 3. Check if user still exists
-    const confirmUser = yield userModel_1.User.findById(decoded.id);
+    const confirmUser = yield userModel_1.User.findById(decoded.id).select("_id fullname email role");
     if (!confirmUser) {
         return next(new appError_1.default("Authentication Failed!, Try logging in again", 401));
     }
@@ -82,6 +83,21 @@ const protectRoute = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
     next();
 });
 exports.protectRoute = protectRoute;
+// const protectRoute = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+//   try {
+//     const token = req.cookies.jwt || req.headers.authorization?.split(" ")[1]; // Handle both cookie & header tokens
+//     if (!token) return next(new AppError("Unauthorized! No token provided.", 401));
+//     const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
+//     // Only fetch necessary fields to improve performance
+//     const user = await User.findById((decoded as any).id).select("_id name email role");
+//     if (!user) return next(new AppError("User no longer exists!", 401));
+//     req.user = user; // Attach only necessary data
+//     next();
+//   } catch (error) {
+//     next(new AppError("Authentication failed!", 401));
+//   }
+// };
+// export { protectRoute };
 // Password Update Functionality. Logged in users changing password
 const updatePassword = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     // 1. Get the logged in user from collection
@@ -99,16 +115,16 @@ const updatePassword = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
     sendToken(user, 200, res);
 });
 exports.updatePassword = updatePassword;
-const generateToken = (id) => {
-    return jsonwebtoken_1.default.sign({ id: id }, process.env.JWT_SECRET, {
-        expiresIn: process.env.JWT_EXPIRES_IN,
+const generateToken = (payload) => {
+    return jsonwebtoken_1.default.sign(payload, index_1.config.JWT_SECRET, {
+        expiresIn: Number(index_1.config.JWT_EXPIRES_IN),
     });
 };
 const sendToken = (user, statusCode, res) => {
     const token = generateToken(user._id);
     console.log(token);
     const cookieOptions = {
-        expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),
+        expires: new Date(Date.now() + index_1.config.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),
         httpOnly: true,
     };
     res.cookie("jwt", token, cookieOptions);

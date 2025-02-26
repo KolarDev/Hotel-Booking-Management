@@ -4,7 +4,7 @@ const mongoose_1 = require("mongoose");
 const roomSchema = new mongoose_1.Schema({
     roomNumber: {
         type: String,
-        unique: [true, "Room Number already exists!"],
+        unique: true,
         required: true,
     },
     type: {
@@ -12,7 +12,7 @@ const roomSchema = new mongoose_1.Schema({
         enum: ["regular", "vip", "vvip"],
         required: true,
     },
-    price: {
+    price_per_night: {
         type: Number,
         required: true,
     },

@@ -7,6 +7,7 @@ export interface IUser extends Document {
   fullname: string;
   email: string;
   password: string;
+  role: string;
   passwordConfirm: string;
   passwordChangedAt: Date;
 }
@@ -45,6 +46,12 @@ const userSchema = new Schema<IUser>(
           return el === this.password;
         },
         message: "Passwords are not the same!!",
+      },
+      role: {
+        type: String,
+        enum: ["user", "admin"],
+        required: true,
+        default: "user",
       },
     },
     passwordChangedAt: Date,
