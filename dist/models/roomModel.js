@@ -18,7 +18,7 @@ const roomSchema = new mongoose_1.Schema({
     },
     bookings: [
         {
-            type: mongoose.Schema.Types.ObjectId,
+            type: mongoose_1.Schema.Types.ObjectId,
             ref: "Booking",
             required: true,
         },

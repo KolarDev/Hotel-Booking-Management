@@ -26,7 +26,7 @@ const roomSchema = new Schema<IRoom>(
     },
     bookings: [
       {
-        type: mongoose.Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: "Booking",
         required: true,
       },

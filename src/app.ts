@@ -2,7 +2,7 @@ import path from "path";
 import express from "express";
 import { Request, Response } from "express";
 import bodyparser from "body-parser";
-
+import { config } from "./config/index";
 // const scheduler = require("./utils/scheduler"); ///////////
 
 import usersRouter from "./routes/userRoutes";

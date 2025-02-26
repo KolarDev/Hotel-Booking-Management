@@ -3,7 +3,7 @@ import * as z from "zod";
 
 const configSchema = z
   .object({
-    PORT: z.coerce.number().default(8080).readonly(),
+    PORT: z.coerce.number().default(9000).readonly(),
     NODE_ENV: z
       .enum(["DEVELOPMENT", "PRODUCTION", "STAGING"])
       .default("DEVELOPMENT")
@@ -13,8 +13,7 @@ const configSchema = z
     DATABASE_LOCAL: z.string().min(1, "DATABASE_LOCAL is required!"),
     JWT_SECRET: z.string().min(1, "JWT_SECRET is required!"),
     JWT_EXPIRES_IN: z.string().min(1, "JWT_EXPIRES_IN is required!"),
-    JWT_COOKIE_EXPIRES_IN: z.number(),
-
+    JWT_COOKIE_EXPIRES_IN: z.coerce.number(),
     MAIL_HOST: z.string().optional(),
     MAIL_PORT: z.coerce.number().optional(),
     MAIL_USERNAME: z.string().optional(),
