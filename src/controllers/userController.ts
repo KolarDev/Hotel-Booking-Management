@@ -42,7 +42,7 @@ const getMe = async (req: Request, res: Response, next: NextFunction) => {
 const updateMe = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { fullname, email, phoneNumber } = req.body;
-    const userId = (req.user._id = req.params.id);
+    const userId = (req.user._id = req.params?.id);
     const user = await User.findByIdAndUpdate(userId, {
       fullname,
       email,
