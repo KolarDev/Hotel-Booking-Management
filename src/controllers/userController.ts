@@ -18,7 +18,7 @@ const getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
 // Get User Profile details
 const getMe = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const userId = (req.user._id = req.params.id);
+    const userId = req.user._id;
     const user = await User.findById(userId);
 
     if (!user) next(new AppError("User not found!", 404));
@@ -40,9 +40,14 @@ const getMe = async (req: Request, res: Response, next: NextFunction) => {
 
 // Update User Profile details
 const updateMe = async (req: Request, res: Response, next: NextFunction) => {
+  
+  if (!req.user) {
+    return next(new AppError("Unauthorized access!", 401));
+  }
+
   try {
     const { fullname, email, phoneNumber } = req.body;
-    const userId = (req.user._id = req.params?.id);
+    const userId = req.user._id;
     const user = await User.findByIdAndUpdate(userId, {
       fullname,
       email,

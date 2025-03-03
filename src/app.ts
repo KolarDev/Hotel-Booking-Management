@@ -1,13 +1,12 @@
 import path from "path";
-import express from "express";
-import { Request, Response } from "express";
+import express, { Application, Request, Response  } from "express";
 import bodyparser from "body-parser";
 import { config } from "./config/index";
 // const scheduler = require("./utils/scheduler"); ///////////
 
-import usersRouter from "./routes/userRoutes";
+import router from "./routes/userRoutes";
 
-const app = express();
+const app: Application = express();
 
 app.use(express.json());
 app.use(bodyparser.json());
@@ -22,6 +21,6 @@ app.get("/", (req: Request, res: Response) => {
   });
 });
 
-app.use("/api/v1/users", usersRouter);
+app.use("/api/v1/users", router);
 
 export default app;

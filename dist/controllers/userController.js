@@ -31,7 +31,7 @@ exports.getAllUsers = getAllUsers;
 // Get User Profile details
 const getMe = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const userId = (req.user._id = req.params.id);
+        const userId = req.user._id;
         const user = yield userModel_1.User.findById(userId);
         if (!user)
             next(new appError_1.default("User not found!", 404));
@@ -53,9 +53,12 @@ const getMe = (req, res, next) => __awaiter(void 0, void 0, void 0, function* ()
 exports.getMe = getMe;
 // Update User Profile details
 const updateMe = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!req.user) {
+        return next(new appError_1.default("Unauthorized access!", 401));
+    }
     try {
         const { fullname, email, phoneNumber } = req.body;
-        const userId = (req.user._id = req.params.id);
+        const userId = req.user._id;
         const user = yield userModel_1.User.findByIdAndUpdate(userId, {
             fullname,
             email,
